@@ -29,15 +29,35 @@ namespace HubtelWallet.Application.Services
             if(customer.Wallets.Count == 5)
                 return Result.Fail($"Customer cannot add more than 5 wallets");
 
-            Wallet newWallet = new Wallet()
+            if(customer.Wallets.Count > 0)
             {
-                CustomerId = customer.Id,
-                Name = request.Name,
-                AccountNumber = request.AccountNumber,
-                Owner = customer.PhoneNumber,
-                AccountScheme = request.AccountScheme,
-                WalletType = request.WalletType
-            };
+                var existingWallet = CheckIfWalletExists(customer, request.AccountNumber, request.WalletType);
+                if(existingWallet is not null)
+                    return Result.Ok(existingWallet.Adapt<WalletDto>()).WithSuccess("Wallet already exists");
+            }
+
+            Wallet newWallet = null;
+
+            if(request.WalletType is WalletType.momo)
+            {
+                newWallet = new MomoWallet()
+                {
+                    CustomerId = customer.Id,
+                    Name = request.Name,
+                    AccountNumber = request.AccountNumber.ToInternationalNumber(),
+                    Owner = customer.PhoneNumber,
+                    AccountScheme = request.AccountScheme,
+                    WalletType = request.WalletType
+                };
+            }else if(request.WalletType is WalletType.card)
+            {
+                newWallet = new VisaWallet(customer.Id, customer.PhoneNumber, request.Name, request.WalletType, request.AccountScheme, 
+                    request.AccountNumber, request.IssueDate, request.ExpiryDate, request.CVC);
+            }
+            else
+            {
+                return Result.Fail($"Wallet cannot be of type unknown");
+            }
 
             var createdWallet = await _repositoryManager.WalletRepository.CreateAsync(newWallet);
 
@@ -78,6 +98,24 @@ namespace HubtelWallet.Application.Services
 
             return Result.Ok(walletDto)
                 .WithSuccess($"Wallet with id {walletId} retrieved successflly");
+        }
+
+        private Wallet? CheckIfWalletExists(Customer customer, string accountNumber, WalletType walletType)
+        {
+            Wallet? existingWallet = null;
+            if (walletType is WalletType.momo)
+            {
+                var formattedNumber = accountNumber.ToInternationalNumber();
+                existingWallet = customer.Wallets.OfType<MomoWallet>()
+                    .FirstOrDefault(mw => mw.AccountNumber == formattedNumber);
+            }else if(walletType is WalletType.card) 
+            {
+                var hashedAccountNumber = accountNumber.ComputeHash();
+                existingWallet = customer.Wallets.OfType<VisaWallet>()
+                    .FirstOrDefault(vw => vw.MaskedVisaNumber == hashedAccountNumber);
+            }
+
+            return existingWallet;
         }
     }
 }

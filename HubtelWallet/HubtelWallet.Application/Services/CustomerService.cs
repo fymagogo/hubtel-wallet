@@ -22,12 +22,12 @@ namespace HubtelWallet.Application.Services
 
         public async Task<Result<CustomerDto>> CreateCustomerAsync(CreateCustomerRequest request)
         {
-            //external service to provide details
+            //external service to provide bio details like name
 
             Customer newCustomer = new Customer()
             {
                 PhoneNumber = request.PhoneNumber.ToInternationalNumber(),
-                Name = "Test Name"
+                Name = "Test Name" // name provided by external service
             };
             var createdCustomer = await _repositoryManager.CustomerRepository.CreateAsync(newCustomer);
 

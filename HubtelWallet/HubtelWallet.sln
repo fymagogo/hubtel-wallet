@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubtelWallet.API", "HubtelW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubtelWallet.Infrastructure", "HubtelWallet.Infrastructure\HubtelWallet.Infrastructure.csproj", "{D44DC43D-A7B0-44CF-8B1A-85BCCD0DDED3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubtelWallet.Tests", "HubtelWallet.Tests\HubtelWallet.Tests.csproj", "{99668CF0-A245-4C6E-8251-E807DF11FE90}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubtelWallet.Domain", "HubtelWallet.Domain\HubtelWallet.Domain.csproj", "{BDA6F631-CB01-443C-91E3-ABD97C4ACA72}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubtelWallet.Application", "HubtelWallet.Application\HubtelWallet.Application.csproj", "{54DA0F9B-7E73-4B11-85FD-1B3779999D59}"
@@ -27,10 +25,6 @@ Global
 		{D44DC43D-A7B0-44CF-8B1A-85BCCD0DDED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D44DC43D-A7B0-44CF-8B1A-85BCCD0DDED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D44DC43D-A7B0-44CF-8B1A-85BCCD0DDED3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99668CF0-A245-4C6E-8251-E807DF11FE90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99668CF0-A245-4C6E-8251-E807DF11FE90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99668CF0-A245-4C6E-8251-E807DF11FE90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99668CF0-A245-4C6E-8251-E807DF11FE90}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BDA6F631-CB01-443C-91E3-ABD97C4ACA72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BDA6F631-CB01-443C-91E3-ABD97C4ACA72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDA6F631-CB01-443C-91E3-ABD97C4ACA72}.Release|Any CPU.ActiveCfg = Release|Any CPU
