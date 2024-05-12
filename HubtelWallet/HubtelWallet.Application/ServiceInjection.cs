@@ -12,7 +12,7 @@ namespace HubtelWallet.Application
 {
     public static class ServiceInjection
     {
-        public static IServiceCollection AddApplicationLayer(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
             services.AddTransient<IServiceManager, ServiceManager>();
             return services;

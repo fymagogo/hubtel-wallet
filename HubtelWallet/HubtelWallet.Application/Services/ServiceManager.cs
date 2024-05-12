@@ -1,5 +1,6 @@
 ﻿using HubtelWallet.Application.Interfaces;
 using HubtelWallet.Domain.IRepositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;

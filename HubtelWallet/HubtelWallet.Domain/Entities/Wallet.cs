@@ -16,7 +16,7 @@ namespace HubtelWallet.Domain.Entities
         public string AccountNumber { get; set; }
         public AccountScheme AccountScheme { get; set; }
         public string Owner { get; set; }
-        public long CustomerId { get; set; }
+        public int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         
     }

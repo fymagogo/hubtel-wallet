@@ -1,4 +1,5 @@
 using Serilog;
+using HubtelWallet.Application;
 using HubtelWallet.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //add layers
-builder.Services.AddInfrastructureLayer(builder.Configuration);
+
+builder.Services
+    .AddApplicationLayer()
+    .AddInfrastructureLayer(builder.Configuration);
 
 builder.Host.UseSerilog((context, loggerConfiguration) =>
 {
@@ -20,6 +24,7 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
 
 var app = builder.Build();
 
+await app.Services.InitializeDatabaseAsync();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

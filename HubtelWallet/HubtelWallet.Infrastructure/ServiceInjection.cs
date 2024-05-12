@@ -19,7 +19,8 @@ namespace HubtelWallet.Infrastructure
         {
             services
                 .IncludePersistence(configuration)
-                .AddTransient<IRepositoryManager, RepositoryManager>();
+                .AddTransient<IRepositoryManager, RepositoryManager>()
+                .AddTransient<IDatabaseInitializer, DatabaseInitializer>();
             return services;
         }
 
@@ -39,6 +40,14 @@ namespace HubtelWallet.Infrastructure
             );
 
             return services;
+        }
+
+        public static async Task InitializeDatabaseAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
+        {
+            // Create a new scope to retrieve scoped services
+            using var scope = services.CreateScope();
+
+            await scope.ServiceProvider.GetRequiredService<IDatabaseInitializer>().InitializeDatabaseAsync(cancellationToken);
         }
     }
 }
