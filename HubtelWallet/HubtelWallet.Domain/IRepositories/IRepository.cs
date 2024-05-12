@@ -15,5 +15,6 @@ namespace HubtelWallet.Domain.IRepositories
         Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
 
         Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<T?>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -29,6 +29,11 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
             return true;
         }
 
+        public Task<IReadOnlyList<Wallet?>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Wallet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var wallet = await _dbContext.Wallets.FirstOrDefaultAsync(x => x.Id == id);

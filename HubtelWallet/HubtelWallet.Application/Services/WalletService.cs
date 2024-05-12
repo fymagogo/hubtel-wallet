@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using HubtelWallet.Application.Dtos;
 using HubtelWallet.Application.Interfaces;
+using HubtelWallet.Application.Models;
 using HubtelWallet.Domain.IRepositories;
 using Mapster;
 using Microsoft.Extensions.Logging;
@@ -14,9 +15,13 @@ namespace HubtelWallet.Application.Services
 {
     internal class WalletService : BaseService, IWalletService
     {
-        private readonly ILogger<WalletService> _logger;
         public WalletService(IRepositoryManager repositoryManager) : base(repositoryManager)
         { }
+
+        public Task<Result<WalletDto>> CreateWalletAsync(CreateWalletRequest request)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<Result<bool>> DeleteCustomerWallet(int walletId)
         {
@@ -28,7 +33,7 @@ namespace HubtelWallet.Application.Services
                 .WithSuccess($"Wallet with id {walletId} deleted successflly");
         }
 
-        public Task<Result<IReadOnlyList<WalletDto>>> GetAllCustomerWallets(int CustomerId)
+        public Task<Result<IEnumerable<WalletDto>>> GetAllCustomerWallets(int CustomerId)
         {
             throw new NotImplementedException();
         }

@@ -1,7 +1,10 @@
 ﻿using FluentResults;
 using HubtelWallet.Application.Dtos;
 using HubtelWallet.Application.Interfaces;
+using HubtelWallet.Application.Models;
+using HubtelWallet.Domain.Entities;
 using HubtelWallet.Domain.IRepositories;
+using Mapster;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -17,9 +20,29 @@ namespace HubtelWallet.Application.Services
         public CustomerService(IRepositoryManager repositoryManager) : base(repositoryManager)
         { }
 
-        public Task<Result<IReadOnlyList<CustomerDto>>> GetAllCustomersAsync()
+        public async Task<Result<CustomerDto>> CreateCustomerAsync(CreateCustomerRequest request)
         {
-            throw new NotImplementedException();
+            //external service to provide details
+
+            Customer newCustomer = new Customer()
+            {
+                PhoneNumber = request.PhoneNumber.ToInternationalNumber(),
+                Name = "Test Name"
+            };
+            var createdCustomer = await _repositoryManager.CustomerRepository.CreateAsync(newCustomer);
+
+            var customerDto =  createdCustomer.Adapt<CustomerDto>();
+            return Result.Ok(customerDto)
+                .WithSuccess("Successfully Created New Customer");
+        }
+
+        public async Task<Result<IEnumerable<CustomerDto>>> GetAllCustomersAsync()
+        {
+            var customers = await _repositoryManager.CustomerRepository.GetAllAsync();
+            var customersDto = customers.Adapt<IEnumerable<CustomerDto>>();
+            return Result.Ok(customersDto)
+                .WithSuccess("Successfully Retrieved Customers");
+
         }
     }
 }

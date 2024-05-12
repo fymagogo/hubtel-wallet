@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace HubtelWallet.Application.Models
 {
-    public record CreateCustomer(string PhoneNumber);
+    public record CreateCustomerRequest(string PhoneNumber);
 }
