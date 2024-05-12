@@ -32,6 +32,22 @@ namespace HubtelWallet.Infrastructure.Persistence
                 entity.HasIndex(x => x.Owner);
             });
 
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.HasIndex(x => x.PhoneNumber).IsUnique();
+            });
+
+            modelBuilder.Entity<MomoWallet>(entity =>
+            {
+                entity.HasIndex(x => x.AccountNumber).IsUnique();
+            });
+
+            modelBuilder.Entity<VisaWallet>(entity =>
+            {
+                entity.HasIndex(x => x.MaskedVisaNumber).IsUnique();
+            });
+
+
 
             modelBuilder.Entity<Wallet>()
                 .Property(x => x.AccountNumber)
