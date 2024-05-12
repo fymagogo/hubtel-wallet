@@ -17,12 +17,12 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteAsync(long id, CancellationToken cancellationToken = default)
+        public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Customer?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+        public Task<Customer?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
