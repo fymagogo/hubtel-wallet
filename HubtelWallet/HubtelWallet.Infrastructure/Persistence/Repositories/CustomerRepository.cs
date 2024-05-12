@@ -13,30 +13,38 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
     {
         public CustomerRepository(AppDbContext dbContext) : base(dbContext) { }
 
-        public async Task<Customer> CreateAsync(Customer entity, CancellationToken cancellationToken = default)
+        public async Task<Customer> CreateAsync(Customer entity)
         {
             var customer = _dbContext.Customers.Add(entity);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync();
             return customer.Entity;
         }
 
-        public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public Task<bool> DeleteAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IReadOnlyList<Customer?>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IReadOnlyList<Customer?>> GetAllAsync()
         {
-            var customers = await _dbContext.Customers.AsNoTracking().ToListAsync(cancellationToken);
+            var customers = await _dbContext.Customers.AsNoTracking().ToListAsync();
             return customers.AsReadOnly();
         }
 
-        public Task<Customer?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Customer?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task UpdateAsync(Customer entity, CancellationToken cancellationToken = default)
+        public async Task<Customer?> GetExtendedByIdAsync(int id)
+        {
+            var customer =  await _dbContext.Customers
+                .Include(x => x.Wallets)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            return customer;
+        }
+
+        public Task UpdateAsync(Customer entity)
         {
             throw new NotImplementedException();
         }

@@ -44,5 +44,16 @@ namespace HubtelWallet.Application.Services
                 .WithSuccess("Successfully Retrieved Customers");
 
         }
+
+        public async Task<Result<CustomerDto>> GetCustomerById(int customerId)
+        {
+            var customer = await _repositoryManager.CustomerRepository.GetExtendedByIdAsync(customerId);
+            if (customer is null)
+                return Result.Fail($"Customer with id {customerId} not found");
+
+            var customerDto = customer.Adapt<CustomerDto>();
+            return Result.Ok(customerDto)
+                .WithSuccess("Successfully Retrieved Customer");
+        }
     }
 }

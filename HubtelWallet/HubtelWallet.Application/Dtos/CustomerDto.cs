@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace HubtelWallet.Application.Dtos
 {
-    public record CustomerDto(string Name, string PhoneNumber);
+    public record CustomerDto(int Id, string Name, string PhoneNumber, IEnumerable<WalletDto> Wallets);
 }

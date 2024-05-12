@@ -13,7 +13,7 @@ namespace HubtelWallet.Application.Interfaces
     {
         public Task<Result<WalletDto>> CreateWalletAsync(CreateWalletRequest request);
         public Task<Result<IEnumerable<WalletDto>>> GetAllCustomerWallets(int customerId);
-        public Task<Result<WalletDto>> GetCustomerWalletById(int walletId);
+        public Task<Result<WalletDto>> GetWalletById(int walletId);
         public Task<Result<bool>> DeleteCustomerWallet(int walletId);
     }
 }

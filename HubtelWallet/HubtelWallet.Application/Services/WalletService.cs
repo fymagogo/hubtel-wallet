@@ -2,6 +2,7 @@
 using HubtelWallet.Application.Dtos;
 using HubtelWallet.Application.Interfaces;
 using HubtelWallet.Application.Models;
+using HubtelWallet.Domain.Entities;
 using HubtelWallet.Domain.IRepositories;
 using Mapster;
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,31 @@ namespace HubtelWallet.Application.Services
         public WalletService(IRepositoryManager repositoryManager) : base(repositoryManager)
         { }
 
-        public Task<Result<WalletDto>> CreateWalletAsync(CreateWalletRequest request)
+        public async Task<Result<WalletDto>> CreateWalletAsync(CreateWalletRequest request)
         {
-            throw new NotImplementedException();
+
+            var customer = await _repositoryManager.CustomerRepository.GetExtendedByIdAsync(request.CustomerId);
+            if (customer is null)
+                return Result.Fail($"Customer with id {request.CustomerId} not found");
+
+            if(customer.Wallets.Count == 5)
+                return Result.Fail($"Customer cannot add more than 5 wallets");
+
+            Wallet newWallet = new Wallet()
+            {
+                CustomerId = customer.Id,
+                Name = request.Name,
+                AccountNumber = request.AccountNumber,
+                Owner = customer.PhoneNumber,
+                AccountScheme = request.AccountScheme,
+                WalletType = request.WalletType
+            };
+
+            var createdWallet = await _repositoryManager.WalletRepository.CreateAsync(newWallet);
+
+            var walletDto = createdWallet.Adapt<WalletDto>();
+            return Result.Ok(walletDto)
+                .WithSuccess("Successfully Created New Wallet");
         }
 
         public async Task<Result<bool>> DeleteCustomerWallet(int walletId)
@@ -33,12 +56,19 @@ namespace HubtelWallet.Application.Services
                 .WithSuccess($"Wallet with id {walletId} deleted successflly");
         }
 
-        public Task<Result<IEnumerable<WalletDto>>> GetAllCustomerWallets(int CustomerId)
+        public async Task<Result<IEnumerable<WalletDto>>> GetAllCustomerWallets(int customerId)
         {
-            throw new NotImplementedException();
+            var customer = await _repositoryManager.CustomerRepository.GetExtendedByIdAsync(customerId);
+            if (customer is null)
+                return Result.Fail($"Customer with id {customerId} not found");
+            var wallets = customer.Wallets;
+
+            var walletsDto = wallets.Adapt<IEnumerable<WalletDto>>();
+            return Result.Ok(walletsDto)
+                .WithSuccess($"Successfully Retrieved Wallets for Customer {customer.Name}");
         }
 
-        public async Task<Result<WalletDto>> GetCustomerWalletById(int walletId)
+        public async Task<Result<WalletDto>> GetWalletById(int walletId)
         {
             var wallet = await _repositoryManager.WalletRepository.GetByIdAsync(walletId);
             if (wallet is null)

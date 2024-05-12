@@ -13,12 +13,14 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
     {
         public WalletRepository(AppDbContext dbContext) : base(dbContext) { }
 
-        public Task<Wallet> CreateAsync(Wallet entity, CancellationToken cancellationToken = default)
+        public async Task<Wallet> CreateAsync(Wallet entity)
         {
-            throw new NotImplementedException();
+            var wallet = _dbContext.Wallets.Add(entity);
+            await _dbContext.SaveChangesAsync();
+            return wallet.Entity;
         }
 
-        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(int id)
         {
             var wallet = await _dbContext.Wallets.FirstOrDefaultAsync(x => x.Id == id);
             if (wallet is null)
@@ -29,18 +31,18 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
             return true;
         }
 
-        public Task<IReadOnlyList<Wallet?>> GetAllAsync(CancellationToken cancellationToken = default)
+        public Task<IReadOnlyList<Wallet?>> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Wallet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Wallet?> GetByIdAsync(int id)
         {
             var wallet = await _dbContext.Wallets.FirstOrDefaultAsync(x => x.Id == id);
             return wallet;
         }
 
-        public Task UpdateAsync(Wallet entity, CancellationToken cancellationToken = default)
+        public Task UpdateAsync(Wallet entity)
         {
             throw new NotImplementedException();
         }

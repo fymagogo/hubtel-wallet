@@ -1,5 +1,7 @@
 ﻿using FluentResults;
 using PhoneNumbers;
+using System.Security.Cryptography;
+using System.Text;
 using Local = HubtelWallet.Domain.Shared;
 
 namespace HubtelWallet.Application
@@ -39,6 +41,24 @@ namespace HubtelWallet.Application
                 return string.Empty;
             }
         }
+
+        public static string ComputeHash(this string input)
+        {
+            using (SHA512 sha512Hash = SHA512.Create())
+            {
+                // Compute hash from input string
+                byte[] bytes = sha512Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+                // Convert byte array to a string representation (hexadecimal)
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2")); // Convert each byte to 2-digit hexadecimal representation
+                }
+                return builder.ToString();
+            }
+        }
+
 
         #region utils
 

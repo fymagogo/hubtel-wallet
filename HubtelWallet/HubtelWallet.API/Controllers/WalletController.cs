@@ -15,11 +15,11 @@ namespace HubtelWallet.API.Controllers
         }
 
 
-        [HttpGet("customer/{id}")]
+        [HttpGet("customer/{customerId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllCustomerWallets(int id)
+        public async Task<IActionResult> GetAllCustomerWallets(int customerId)
         {
-            var res = await _serviceManager.WalletService.GetAllCustomerWallets(id);
+            var res = await _serviceManager.WalletService.GetAllCustomerWallets(customerId);
             return Ok(res.ToResultDto());
         }
 
@@ -27,7 +27,7 @@ namespace HubtelWallet.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetWalletById(int id)
         {
-            var res = await _serviceManager.WalletService.GetCustomerWalletById(id);
+            var res = await _serviceManager.WalletService.GetWalletById(id);
             return Ok(res.ToResultDto());
         }
 
@@ -36,8 +36,11 @@ namespace HubtelWallet.API.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateWallet(CreateWalletRequest createWalletRequest)
         {
-            //var res = await _serviceManager.WalletService.GetAllWalletsByCustomer(walletId);
-            var res = await _serviceManager.WalletService.GetCustomerWalletById(1);
+            var res = await _serviceManager.WalletService.CreateWalletAsync(createWalletRequest);
+
+            if (res.IsFailed)
+                return Ok(res.ToResultDto());
+
             return CreatedAtAction(nameof(CreateWallet), value: res.ToResultDto());
         }
 

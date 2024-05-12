@@ -23,5 +23,10 @@ namespace HubtelWallet.Infrastructure.Persistence
                 entity.HasIndex(x => x.Owner);
             });
         }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<Enum>().HaveConversion<string>();
+        }
     }
 }

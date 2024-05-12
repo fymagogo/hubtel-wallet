@@ -21,12 +21,24 @@ namespace HubtelWallet.API.Controllers
             return Ok(res.ToResultDto());
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCustomer(int id)
+        {
+            var res = await _serviceManager.CustomerService.GetCustomerById(id);
+            return Ok(res.ToResultDto());
+        }
+
         [HttpPost]
         [ActionName(nameof(CreateCustomer))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateCustomer(CreateCustomerRequest createCustomerRequest)
         {
             var res = await _serviceManager.CustomerService.CreateCustomerAsync(createCustomerRequest);
+
+            if (res.IsFailed)
+                return Ok(res.ToResultDto());
+
             return CreatedAtAction(nameof(CreateCustomer), value: res.ToResultDto());
         }
     }

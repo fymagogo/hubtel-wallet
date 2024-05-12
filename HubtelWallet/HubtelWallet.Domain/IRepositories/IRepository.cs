@@ -8,13 +8,13 @@ namespace HubtelWallet.Domain.IRepositories
 {
     public interface IRepository<T> where T : class
     {
-        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<T?> GetByIdAsync(int id);
 
-        Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T> CreateAsync(T entity);
 
-        Task UpdateAsync(T entity, CancellationToken cancellationToken = default);
+        Task UpdateAsync(T entity);
 
-        Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
-        Task<IReadOnlyList<T?>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(int id);
+        Task<IReadOnlyList<T?>> GetAllAsync();
     }
 }
