@@ -86,5 +86,20 @@ namespace HubtelWallet.Application.Services
 
             return Result.Ok(customer.Token);
         }
+
+        public async Task<Result<bool>> LogoutCustomer(string phoneNumber)
+        {
+            //check if customer exists
+            
+            var customer = await _repositoryManager.CustomerRepository.GetCustomerByPhoneNumber(phoneNumber.ToInternationalNumber());
+            if (customer is null)
+                return Result.Fail<bool>("Customer Not Found");
+
+            customer.Token = Extension.RandomToken();
+            await _repositoryManager.CustomerRepository.UpdateAsync(customer);
+
+
+            return Result.Ok(true);
+        }
     }
 }

@@ -49,9 +49,10 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
             return customer;
         }
 
-        public Task UpdateAsync(Customer entity)
+        public async Task<bool> UpdateAsync(Customer entity)
         {
-            throw new NotImplementedException();
+            await _dbContext.SaveChangesAsync();
+            return true;
         }
     }
 }

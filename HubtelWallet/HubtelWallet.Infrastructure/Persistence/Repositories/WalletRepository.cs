@@ -42,7 +42,7 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
             return wallet;
         }
 
-        public Task UpdateAsync(Wallet entity)
+        public Task<bool> UpdateAsync(Wallet entity)
         {
             throw new NotImplementedException();
         }

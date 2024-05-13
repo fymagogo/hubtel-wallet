@@ -12,7 +12,7 @@ namespace HubtelWallet.Domain.IRepositories
 
         Task<T> CreateAsync(T entity);
 
-        Task UpdateAsync(T entity);
+        Task<bool> UpdateAsync(T entity);
 
         Task<bool> DeleteAsync(int id);
         Task<IReadOnlyList<T?>> GetAllAsync();
