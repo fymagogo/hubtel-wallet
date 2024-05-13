@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using PhoneNumbers;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Local = HubtelWallet.Domain.Shared;
@@ -57,6 +58,13 @@ namespace HubtelWallet.Application
                 }
                 return builder.ToString();
             }
+        }
+
+        public static string RandomToken()
+        {
+            Random random = new Random();
+            int randomDigits = random.Next(1000, 10000);
+            return randomDigits.ToString();
         }
 
 

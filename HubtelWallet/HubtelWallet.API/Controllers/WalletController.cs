@@ -2,12 +2,14 @@
 using HubtelWallet.Application.Interfaces;
 using HubtelWallet.Application.Models;
 using HubtelWallet.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HubtelWallet.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class WalletController : BaseController
     {
         public WalletController(IServiceManager serviceManager) : base(serviceManager)

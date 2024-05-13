@@ -1,6 +1,7 @@
 ﻿using HubtelWallet.Application;
 using HubtelWallet.Application.Interfaces;
 using HubtelWallet.Application.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HubtelWallet.API.Controllers
@@ -14,6 +15,7 @@ namespace HubtelWallet.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCustomers()
         {
@@ -22,6 +24,7 @@ namespace HubtelWallet.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCustomer(int id)
         {
@@ -29,17 +32,18 @@ namespace HubtelWallet.API.Controllers
             return Ok(res.ToResultDto());
         }
 
-        [HttpPost]
-        [ActionName(nameof(CreateCustomer))]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> CreateCustomer(CreateCustomerRequest createCustomerRequest)
+        [HttpPost("login")]
+        [AllowAnonymous]
+        [ActionName(nameof(Login))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Login(CreateCustomerRequest createCustomerRequest)
         {
-            var res = await _serviceManager.CustomerService.CreateCustomerAsync(createCustomerRequest);
+            var res = await _serviceManager.CustomerService.GetCustomerToken(createCustomerRequest.PhoneNumber);
 
             if (res.IsFailed)
                 return Ok(res.ToResultDto());
 
-            return CreatedAtAction(nameof(CreateCustomer), value: res.ToResultDto());
+            return Ok(res.ToResultDto());
         }
     }
 }

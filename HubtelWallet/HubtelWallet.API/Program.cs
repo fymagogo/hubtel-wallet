@@ -4,6 +4,8 @@ using HubtelWallet.Infrastructure;
 using System.Text.Json.Serialization;
 using HubtelWallet.API.Middlewares;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +23,33 @@ builder.Services
         });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hubtel Wallet API" });
+    c.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Basic",
+        In = ParameterLocation.Header,
+        Description = "Basic Authorization header."
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Basic"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 //add layers
 
@@ -33,6 +61,10 @@ builder.Services
     {
         options.SuppressModelStateInvalidFilter = true;
     });
+
+//add authentication
+builder.Services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
 builder.Host.UseSerilog((context, loggerConfiguration) =>
 {
@@ -55,6 +87,7 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -16,7 +16,6 @@ namespace HubtelWallet.Application.Services
 {
     internal class CustomerService : BaseService, ICustomerService
     {
-        private readonly ILogger<CustomerService> _logger;
         public CustomerService(IRepositoryManager repositoryManager) : base(repositoryManager)
         { }
 
@@ -27,7 +26,8 @@ namespace HubtelWallet.Application.Services
             Customer newCustomer = new Customer()
             {
                 PhoneNumber = request.PhoneNumber.ToInternationalNumber(),
-                Name = "Test Name" // name provided by external service
+                Name = "Test Name", // name provided by external service
+                Token = Extension.RandomToken()
             };
             var createdCustomer = await _repositoryManager.CustomerRepository.CreateAsync(newCustomer);
 
@@ -54,6 +54,37 @@ namespace HubtelWallet.Application.Services
             var customerDto = customer.Adapt<CustomerDto>();
             return Result.Ok(customerDto)
                 .WithSuccess("Successfully Retrieved Customer");
+        }
+
+        public async Task<bool> ValidateCustomerToken(string phoneNumber, string token)
+        {
+            Customer customer = await _repositoryManager.CustomerRepository.GetCustomerByPhoneNumber(phoneNumber.ToInternationalNumber());
+            if (customer is null)
+                return false;
+            if (customer.Token != token)
+                return false;
+            return true;
+
+        }
+
+        public async Task<Result<string>> GetCustomerToken(string phoneNumber)
+        {
+            //check if customer exists
+            Customer customer = null;
+            customer = await _repositoryManager.CustomerRepository.GetCustomerByPhoneNumber(phoneNumber.ToInternationalNumber());
+            if(customer is null)
+            {
+                Customer newCustomer = new Customer()
+                {
+                    PhoneNumber = phoneNumber.ToInternationalNumber(),
+                    Name = "Test Name", // name provided by external service
+                    Token = Extension.RandomToken()
+                };
+                var createdCustomer = await _repositoryManager.CustomerRepository.CreateAsync(newCustomer);
+                customer = createdCustomer;
+            }
+
+            return Result.Ok(customer.Token);
         }
     }
 }

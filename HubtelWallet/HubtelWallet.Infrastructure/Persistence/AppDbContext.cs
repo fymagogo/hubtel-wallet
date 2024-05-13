@@ -54,6 +54,26 @@ namespace HubtelWallet.Infrastructure.Persistence
                 .HasMaxLength(20);
         }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTimestamps()
+        {
+            var entities = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity)
+                .OfType<BaseEntity>(); // Assuming YourEntity is the entity type with the UpdatedAt property
+
+            foreach (var entity in entities)
+            {
+                entity.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+
+
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<Enum>().HaveConversion<string>();

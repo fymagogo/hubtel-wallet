@@ -14,5 +14,7 @@ namespace HubtelWallet.Application.Interfaces
         public Task<Result<IEnumerable<CustomerDto>>> GetAllCustomersAsync();
         public Task<Result<CustomerDto>> CreateCustomerAsync(CreateCustomerRequest request);
         public Task<Result<CustomerDto>> GetCustomerById(int customerId);
+        public Task<Result<String>> GetCustomerToken(string phoneNumber);
+        public Task<bool> ValidateCustomerToken(string phoneNumber, string token);
     }
 }
