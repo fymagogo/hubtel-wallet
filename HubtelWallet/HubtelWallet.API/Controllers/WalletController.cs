@@ -17,11 +17,11 @@ namespace HubtelWallet.API.Controllers
         }
 
 
-        [HttpGet("customer/{customerId}")]
+        [HttpGet("customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllCustomerWallets(int customerId)
+        public async Task<IActionResult> GetAllCustomerWallets()
         {
-            var res = await _serviceManager.WalletService.GetAllCustomerWallets(customerId);
+            var res = await _serviceManager.WalletService.GetAllCustomerWallets();
             return Ok(res.ToResultDto());
         }
 

@@ -15,6 +15,7 @@ namespace HubtelWallet.Application
         public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
             services.IncludeValidators();
+            services.AddMemoryCache();
             services.AddTransient<IServiceManager, ServiceManager>();
             return services;
         }

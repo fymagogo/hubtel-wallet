@@ -6,5 +6,6 @@ namespace HubtelWallet.Domain.IRepositories
     {
         Task<Customer?> GetExtendedByIdAsync(int id);
         Task<Customer?> GetCustomerByPhoneNumber(string phoneNumber);
+        Task<Customer?> GetExtendedByPhoneNumberAsync(string phoneNumber);
     }
 }

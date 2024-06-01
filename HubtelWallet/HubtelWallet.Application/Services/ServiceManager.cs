@@ -1,5 +1,8 @@
 ﻿using HubtelWallet.Application.Interfaces;
+using HubtelWallet.Application.Interfaces.ExternalServices;
 using HubtelWallet.Domain.IRepositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,10 +17,10 @@ namespace HubtelWallet.Application.Services
         private readonly Lazy<ICustomerService> _lazyCustomerService;
         private readonly Lazy<IWalletService> _lazyWallerService;
 
-        public ServiceManager(IRepositoryManager repositoryManager)
+        public ServiceManager(IRepositoryManager repositoryManager, IFakeService fakeService, IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
         {
-            _lazyCustomerService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager));
-            _lazyWallerService = new Lazy<IWalletService>(() => new WalletService(repositoryManager));
+            _lazyCustomerService = new Lazy<ICustomerService>(() => new CustomerService(repositoryManager, fakeService, httpContextAccessor, memoryCache));
+            _lazyWallerService = new Lazy<IWalletService>(() => new WalletService(repositoryManager, fakeService, httpContextAccessor));
         }
 
         public ICustomerService CustomerService => _lazyCustomerService.Value;

@@ -41,6 +41,14 @@ namespace HubtelWallet.Infrastructure.Persistence.Repositories
             return await _dbContext.Customers.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
         }
 
+        public async Task<Customer?> GetExtendedByPhoneNumberAsync(string phoneNumber)
+        {
+            var customer = await _dbContext.Customers
+                .Include(x => x.Wallets)
+                .FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
+            return customer;
+        }
+
         public async Task<Customer?> GetExtendedByIdAsync(int id)
         {
             var customer =  await _dbContext.Customers

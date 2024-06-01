@@ -15,7 +15,7 @@ namespace HubtelWallet.API.Controllers
         {
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCustomers()
@@ -24,12 +24,12 @@ namespace HubtelWallet.API.Controllers
             return Ok(res.ToResultDto());
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetCustomer(int id)
+        public async Task<IActionResult> GetCustomer()
         {
-            var res = await _serviceManager.CustomerService.GetCustomerById(id);
+            var res = await _serviceManager.CustomerService.GetCurrentCustomer();
             return Ok(res.ToResultDto());
         }
 
@@ -39,6 +39,8 @@ namespace HubtelWallet.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Login(CreateCustomerRequest createCustomerRequest)
         {
+            //clear out session details incase its an existing customer
+            HttpContext.Session.Clear();
             var res = await _serviceManager.CustomerService.GetCustomerToken(createCustomerRequest.PhoneNumber);
 
             if (res.IsFailed)
@@ -53,13 +55,9 @@ namespace HubtelWallet.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Logout()
         {
-            var username = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-            var res = await _serviceManager.CustomerService.LogoutCustomer(username);
 
-            if (res.IsFailed)
-                return Ok(res.ToResultDto());
-
-            return Ok(res.ToResultDto());
+            HttpContext.Session.Clear();
+            return Ok();
         }
     }
 }

@@ -45,11 +45,9 @@ namespace HubtelWallet.Domain.Entities
     public class VisaWallet : Wallet
     {
 
-        public VisaWallet(int customerId, string owner, string name, WalletType walletType, AccountScheme accountScheme,string accountNumber, DateTime issueDate, DateTime expiryDate, string cvc)
+        public VisaWallet(int customerId, string owner, string name, WalletType walletType, AccountScheme accountScheme,string accountNumber, DateTime issueDate, DateTime expiryDate)
         {
             AccountNumber = SetAccountNumber(accountNumber);
-            //CVC = ComputeHash(cvc);
-            Cvc = ComputeHash(cvc);
             MaskedVisaNumber = ComputeHash(accountNumber);
             IssueDate = issueDate;
             ExpiryDate = expiryDate;
@@ -62,7 +60,6 @@ namespace HubtelWallet.Domain.Entities
 
         public DateTime ExpiryDate { get; set; }
         public DateTime IssueDate { get; set; }
-        public string Cvc { get; private set; }
         public string MaskedVisaNumber {  get; private set; }
 
         private string SetAccountNumber(string value)

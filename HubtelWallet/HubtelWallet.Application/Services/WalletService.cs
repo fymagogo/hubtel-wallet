@@ -1,10 +1,13 @@
 ﻿using FluentResults;
 using HubtelWallet.Application.Dtos;
 using HubtelWallet.Application.Interfaces;
+using HubtelWallet.Application.Interfaces.ExternalServices;
 using HubtelWallet.Application.Models;
 using HubtelWallet.Domain.Entities;
 using HubtelWallet.Domain.IRepositories;
 using Mapster;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,24 +19,24 @@ namespace HubtelWallet.Application.Services
 {
     internal class WalletService : BaseService, IWalletService
     {
-        public WalletService(IRepositoryManager repositoryManager) : base(repositoryManager)
-        { }
+        private readonly IFakeService _fakeService;
+        public WalletService(IRepositoryManager repositoryManager, IFakeService fakeService, IHttpContextAccessor httpContextAccessor) : base(repositoryManager, httpContextAccessor)
+        {
+            _fakeService = fakeService;
+        }
 
         public async Task<Result<WalletDto>> CreateWalletAsync(CreateWalletRequest request)
         {
+            var customer = await GetCurrentCustomerDetails();
 
-            var customer = await _repositoryManager.CustomerRepository.GetExtendedByIdAsync(request.CustomerId);
-            if (customer is null)
-                return Result.Fail($"Customer with id {request.CustomerId} not found");
-
-            if(customer.Wallets.Count == 5)
+            if (customer.Wallets.Count == 5)
                 return Result.Fail($"Customer cannot add more than 5 wallets");
 
             if(customer.Wallets.Count > 0)
             {
                 var existingWallet = CheckIfWalletExists(customer, request.AccountNumber, request.WalletType);
-                if(existingWallet is not null)
-                    return Result.Ok(existingWallet.Adapt<WalletDto>()).WithSuccess("Wallet already exists");
+                if (existingWallet is not null)
+                    throw new BadHttpRequestException("Bad Request");
             }
 
             Wallet newWallet = null;
@@ -49,10 +52,13 @@ namespace HubtelWallet.Application.Services
                     AccountScheme = request.AccountScheme,
                     WalletType = request.WalletType
                 };
+
+
             }else if(request.WalletType is WalletType.card)
             {
                 newWallet = new VisaWallet(customer.Id, customer.PhoneNumber, request.Name, request.WalletType, request.AccountScheme, 
-                    request.AccountNumber, request.IssueDate, request.ExpiryDate, request.CVC);
+                    request.AccountNumber, request.IssueDate, request.ExpiryDate);
+
             }
             else
             {
@@ -68,6 +74,11 @@ namespace HubtelWallet.Application.Services
 
         public async Task<Result<bool>> DeleteCustomerWallet(int walletId)
         {
+            var customer = await GetCurrentCustomerDetails();
+
+            if (!customer.Wallets.Any(i => i.Id == walletId))
+                return Result.Fail("Wallet does not exist");
+
             var deleteWallet = await _repositoryManager.WalletRepository.DeleteAsync(walletId);
             if (deleteWallet is false)
                 return Result.Fail($"Wallet with id {walletId} not found");
@@ -76,11 +87,10 @@ namespace HubtelWallet.Application.Services
                 .WithSuccess($"Wallet with id {walletId} deleted successflly");
         }
 
-        public async Task<Result<IEnumerable<WalletDto>>> GetAllCustomerWallets(int customerId)
+        public async Task<Result<IEnumerable<WalletDto>>> GetAllCustomerWallets()
         {
-            var customer = await _repositoryManager.CustomerRepository.GetExtendedByIdAsync(customerId);
-            if (customer is null)
-                return Result.Fail($"Customer with id {customerId} not found");
+            var customer = await GetCurrentCustomerDetails();
+
             var wallets = customer.Wallets;
 
             var walletsDto = wallets.Adapt<IEnumerable<WalletDto>>();
@@ -90,6 +100,11 @@ namespace HubtelWallet.Application.Services
 
         public async Task<Result<WalletDto>> GetWalletById(int walletId)
         {
+            var customer = await GetCurrentCustomerDetails();
+
+            if (!customer.Wallets.Any(i => i.Id == walletId))
+                return Result.Fail("Wallet does not exist");
+
             var wallet = await _repositoryManager.WalletRepository.GetByIdAsync(walletId);
             if (wallet is null)
                 return Result.Fail($"Wallet with id {walletId} not found");
@@ -117,5 +132,6 @@ namespace HubtelWallet.Application.Services
 
             return existingWallet;
         }
+
     }
 }

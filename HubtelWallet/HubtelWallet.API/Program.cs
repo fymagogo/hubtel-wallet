@@ -54,6 +54,7 @@ builder.Services.AddSwaggerGen(c =>
 //add layers
 
 builder.Services
+    .AddDistributedMemoryCache()
     .AddApplicationLayer()
     .AddInfrastructureLayer(builder.Configuration)
     .AddTransient<ExceptionHandlingMiddleware>()
@@ -61,6 +62,15 @@ builder.Services
     {
         options.SuppressModelStateInvalidFilter = true;
     });
+
+builder.Services.AddSession(options =>
+{
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromSeconds(1000);
+    options.Cookie.HttpOnly = true;
+});
+builder.Services.AddMemoryCache();
+
 
 //add authentication
 builder.Services.AddAuthentication("BasicAuthentication")
@@ -86,6 +96,8 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

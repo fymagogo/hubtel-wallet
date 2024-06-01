@@ -1,4 +1,5 @@
-﻿using HubtelWallet.Application.Interfaces;
+﻿using HubtelWallet.Application;
+using HubtelWallet.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,10 +13,12 @@ namespace HubtelWallet.API.Middlewares
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly IServiceManager _serviceManager;
+        private readonly ILogger<BasicAuthenticationHandler> _logger;
         public BasicAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IServiceManager serviceManager) : base(options, logger, encoder, clock)
             {
                 _serviceManager = serviceManager;
+                _logger = logger.CreateLogger<BasicAuthenticationHandler>();
             }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -23,6 +26,19 @@ namespace HubtelWallet.API.Middlewares
             if (!Request.Headers.ContainsKey("Authorization"))
             {
                 return AuthenticateResult.Fail("Authorization header missing");
+            }
+
+            var isAuthenticated = Context.Session.GetString("IsAuthenticated");
+            var sessionUsername = Context.Session.GetString("Username");
+            if (isAuthenticated == "true" && sessionUsername is not null)
+            {
+                _logger.LogDebug("User is already authenticated");
+                //var ticket = new AuthenticationTicket(Context.User, Scheme.Name);
+                var claims = new[] { new Claim(ClaimTypes.Name, sessionUsername) };
+                var identity = new ClaimsIdentity(claims, Scheme.Name);
+                var principal = new ClaimsPrincipal(identity);
+                var ticket = new AuthenticationTicket(principal, Scheme.Name);
+                return AuthenticateResult.Success(ticket);
             }
 
             try
@@ -43,6 +59,10 @@ namespace HubtelWallet.API.Middlewares
                 var identity = new ClaimsIdentity(claims, Scheme.Name);
                 var principal = new ClaimsPrincipal(identity);
                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+                Context.User = principal;
+                Context.Session.SetString("Username", username.ToInternationalNumber());
+                Context.Session.SetString("IsAuthenticated", "true");
 
                 return AuthenticateResult.Success(ticket);
             }

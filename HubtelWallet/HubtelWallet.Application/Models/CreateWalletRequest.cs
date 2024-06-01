@@ -4,13 +4,12 @@ using HubtelWallet.Domain.Entities;
 
 namespace HubtelWallet.Application.Models
 {
-    public record CreateWalletRequest(int CustomerId, string Name, WalletType WalletType, string AccountNumber, AccountScheme AccountScheme, DateTime IssueDate, DateTime ExpiryDate, string CVC);
+    public record CreateWalletRequest(string Name, WalletType WalletType, string AccountNumber, AccountScheme AccountScheme, DateTime IssueDate, DateTime ExpiryDate);
 
     public class CreateWalletRequestValidator : AbstractValidator<CreateWalletRequest>
     {
         public CreateWalletRequestValidator()
         {
-            RuleFor(r => r.CustomerId).GreaterThan(0).WithMessage("Enter a valid customer Id");
 
             RuleFor(r => r.WalletType).NotEqual(WalletType.unknown)
                 .WithMessage("Wallet Type should not be unknown");
@@ -42,14 +41,30 @@ namespace HubtelWallet.Application.Models
                 .When(r => r.WalletType is WalletType.card)
                 .WithMessage("'{PropertyName}' Should be greater than the issue date");
 
-            RuleFor(r => r.CVC).Length(3)
+            RuleFor(r => r.AccountScheme).Must(BeAValidMomoScheme)
+                .When(r => r.WalletType is WalletType.momo)
+                .WithMessage("'{PropertyName}' Should be a valid momo scheme");
+
+            RuleFor(r => r.AccountScheme).Must(BeAValidCardScheme)
                 .When(r => r.WalletType is WalletType.card)
-                .WithMessage("'{PropertyName}' Should be 3 characters.");
+                .WithMessage("'{PropertyName}' Should be a valid card scheme");
         }
 
         public static bool BeAValidDate(DateTime date)
         {
             return !date.Equals(default);
+        }
+
+        public static bool BeAValidMomoScheme(AccountScheme scheme)
+        {
+            List<AccountScheme> momoSchemes = new List<AccountScheme> { AccountScheme.airteltigo, AccountScheme.mtn, AccountScheme.vodafone};
+            return momoSchemes.Contains(scheme);
+        }
+
+        public static bool BeAValidCardScheme(AccountScheme scheme)
+        {
+            List<AccountScheme> momoSchemes = new List<AccountScheme> { AccountScheme.visa, AccountScheme.mastercard};
+            return momoSchemes.Contains(scheme);
         }
     }
 }

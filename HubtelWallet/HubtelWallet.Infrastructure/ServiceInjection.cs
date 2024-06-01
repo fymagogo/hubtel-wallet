@@ -1,4 +1,6 @@
-﻿using HubtelWallet.Domain.IRepositories;
+﻿using HubtelWallet.Application.Interfaces.ExternalServices;
+using HubtelWallet.Domain.IRepositories;
+using HubtelWallet.Infrastructure.ExternalServices;
 using HubtelWallet.Infrastructure.Persistence;
 using HubtelWallet.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,8 @@ namespace HubtelWallet.Infrastructure
             services
                 .IncludePersistence(configuration)
                 .AddTransient<IRepositoryManager, RepositoryManager>()
-                .AddTransient<IDatabaseInitializer, DatabaseInitializer>();
+                .AddTransient<IDatabaseInitializer, DatabaseInitializer>()
+                .AddTransient<IFakeService, FakeService>();
             return services;
         }
 
