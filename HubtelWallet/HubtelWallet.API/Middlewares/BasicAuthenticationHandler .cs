@@ -33,11 +33,8 @@ namespace HubtelWallet.API.Middlewares
             if (isAuthenticated == "true" && sessionUsername is not null)
             {
                 _logger.LogDebug("User is already authenticated");
-                //var ticket = new AuthenticationTicket(Context.User, Scheme.Name);
-                var claims = new[] { new Claim(ClaimTypes.Name, sessionUsername) };
-                var identity = new ClaimsIdentity(claims, Scheme.Name);
-                var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+                var ticket = CreateTicket(sessionUsername);
                 return AuthenticateResult.Success(ticket);
             }
 
@@ -55,12 +52,8 @@ namespace HubtelWallet.API.Middlewares
                     return AuthenticateResult.Fail("Invalid username or password");
                 }
 
-                var claims = new[] { new Claim(ClaimTypes.Name, username) };
-                var identity = new ClaimsIdentity(claims, Scheme.Name);
-                var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-                Context.User = principal;
+                var ticket = CreateTicket(username);
                 Context.Session.SetString("Username", username.ToInternationalNumber());
                 Context.Session.SetString("IsAuthenticated", "true");
 
@@ -70,6 +63,15 @@ namespace HubtelWallet.API.Middlewares
             {
                 return AuthenticateResult.Fail("Invalid authorization header");
             }
+        }
+
+        private AuthenticationTicket CreateTicket(string username)
+        {
+            var claims = new[] { new Claim(ClaimTypes.Name, username) };
+            var identity = new ClaimsIdentity(claims, Scheme.Name);
+            var principal = new ClaimsPrincipal(identity);
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+            return ticket;
         }
     }
 }
